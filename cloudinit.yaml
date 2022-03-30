@@ -1,0 +1,31 @@
+#cloud-config
+package_update: true
+package_upgrade: true
+
+# Install packages via apt. To add packages it might be required to add additional sources above.
+packages:
+ - unzip
+ - git
+ - wget
+ - curl
+ - apt-transport-https
+ - software-properties-common 
+# - npm
+# - docker.io
+ #- packages-microsoft-prod
+ #- dotnet-sdk-6.0
+ 
+# Install latest version of azcopy (can not be installed via apt)
+runcmd:
+# Download AzCopy and extract archive
+ - curl ${var.jmeter3_url} > jMeter.tgz
+ - tar zxvf jMeter.tgz
+ - my_ip=$(ec2metadata --local-ipv4)
+ - sudo apache-jmeter-3.3/bin/jmeter-server -Dserver.rmi.localport=50000 -Dserver_port=1099 -Djava.rmi.server.hostname=$my_ip -Jserver.rmi.ssl.disable=true 
+
+
+# create the docker group
+groups:
+  - docker
+
+final_message: "The system is finally up, after $UPTIME seconds"
