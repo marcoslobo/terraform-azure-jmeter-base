@@ -6,14 +6,14 @@ variable "location" {
   description = "The Azure Region in which all resources in this example should be created."
 }
 
-variable "slave_instance_type" {
+variable "node_instance_type" {
   description = "Instance type for slave nodes"
-  default = "t2.micro"
+  default = "Standard_B2s"
 }
 
 variable "master_instance_type" {
   description = "Instance type for master node"
-  default = "t2.medium"
+  default = "Standard_B2s"
 }
 
 variable "slave_ssh_public_key_file" {
@@ -31,9 +31,9 @@ variable "master_ssh_private_key_file" {
   default = "ssh/master"
 }
 
-variable "slave_asg_size" {
-  description = "Amount of working nodes in ASG"
-  default = "2"
+variable "node_quantity" {
+  description = "Amount of working nodes in Azure Scale"
+  default = "1"
 }
 
 variable "jmx_script_file" {

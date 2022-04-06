@@ -42,11 +42,38 @@ resource "azurerm_network_interface" "main" {
   }
 }
 
+###
+
+
+# resource "azurerm_storage_account" "jmeterStor" {
+#   name                     = "examplestoracc"
+#   resource_group_name      = azurerm_resource_group.main.name
+#   location                 = azurerm_resource_group.main.location
+#   account_tier             = "Standard"
+#   account_replication_type = "LRS"
+# }
+
+# resource "azurerm_storage_container" "jmeterStorContainer" {
+#   name                  = "content"
+#   storage_account_name  = azurerm_storage_account.jmeterStor.name
+#   container_access_type = "blob"
+# }
+
+
+# resource "azurerm_storage_blob" "files" {
+#   name                   = "jmeter-scripts.tar.gz"
+#   storage_account_name   = azurerm_storage_account.jmeterStor.name
+#   storage_container_name = azurerm_storage_container.jmeterStorContainer.name
+#   type                   = "Block"
+#   source                 = "jmeter-scripts.tar.gz"
+# }
+
+
 resource "azurerm_linux_virtual_machine" "main" {
   name                = "${var.prefix}-master"
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
-  size                = "Standard_F2"
+  size                = var.master_instance_type
   admin_username      = "ubuntu"
   network_interface_ids = [
     azurerm_network_interface.main.id,
@@ -58,9 +85,9 @@ resource "azurerm_linux_virtual_machine" "main" {
   }
 
   source_image_reference {
-    publisher = "Canonical"
-    offer     = "0001-com-ubuntu-server-focal-daily"
-    sku       = "20_04-daily-lts"
+    publisher = "canonical"
+    offer     = "0001-com-ubuntu-server-focal"
+    sku       = "20_04-lts-gen2"
     version   = "latest"
   }
 
@@ -108,7 +135,7 @@ resource "azurerm_linux_virtual_machine" "main" {
     source      = "${path.module}/files"
     destination = "/jmeter-master"
   }
-  
+
   provisioner "file" {
     source      = var.jmx_script_file
     destination = "/jmeter-master/files/script.jmx"
@@ -139,4 +166,5 @@ resource "azurerm_linux_virtual_machine" "main" {
       "sudo docker-compose -f ~/../../jmeter-master/files/docker-compose.yml up -d"
     ]
   }
+
 }
